@@ -1,4 +1,5 @@
 const gifContainers = document.querySelectorAll(".gif-container")
+const startBtn = document.getElementById("start-game-btn")
 
 const numGifs = gifContainers.length
 let currentRound = {}
@@ -11,8 +12,8 @@ const words = [
     "excited",
     "love",
     "lonely",
+    "cringe",
     "book",
-    "house",
     "water",
     "nature",
     "justice",
@@ -21,6 +22,19 @@ const words = [
     "car",
     "baby"
 ]
+
+//
+function startGame() {
+    prepareNextRound()
+    setTimeout(() => {
+        roundTransition()
+    }, 200);
+}
+
+//
+function startCountdown() {
+
+}
 
 // return random/s word from a given list
 function returnRandomFromArray(wordsArray, num) {
@@ -90,6 +104,15 @@ function fadeGifsIn() {
     )
 }
 
+// 
+function roundTransition() {
+    fadeGifsOut()
+
+    setTimeout(() => {
+        fadeGifsIn()
+    }, 500);
+}
+
 // do the api call to giphy api, ready for next round
 function prepareNextRound() {
     nextRound = {}
@@ -102,8 +125,6 @@ function prepareNextRound() {
     .then(
         data => {
             nextRound.urls = returnRandomFromArray(data.data, 4)
-
-            console.log(nextRound)
         }
     )
 }
