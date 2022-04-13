@@ -1,16 +1,17 @@
-html {
-    background-color: rgb(255, 245, 151);
-    color: rgb(153, 144, 67);
-    font-family: 'League Spartan', sans-serif;;
+/* universal */
+:root {
+    --light: rgb(249, 242, 184);
+    --dark: rgb(115, 112, 78);
+    --void: rgba(0, 0, 0, 0)
 }
 
-#header-title {
-    margin: 0;
-    width: fit-content;
+html {
+    background-color: var(--light);
+    color: var(--dark);
+    font-family: 'Space Grotesk', sans-serif;;
 }
 
 .col-container {
-    min-height: 100px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -23,14 +24,40 @@ html {
     align-items: center;
 }
 
-/*  */
+.btn {
+    background-color: var(--void);
+    border: 2px solid var(--dark);
+    border-radius: 50px;
+    width: 300px;
+    color: var(--dark);
+}
+
+/* header */
+#header-title {
+    margin: 0;
+    width: fit-content;
+    font-size: 70px;
+    border-bottom: 10px dotted var(--dark);
+}
+
+/* main section */
+#main-container {
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
 .gif-container {
     margin: 10px;
     width: 200px;
     height: 200px;
-    background-color: aqua;
+    background-color: var(--dark);
 }
 
-#start-game-btn {
-
+#start-game-btn:hover {
+    background-color: var(--dark);
+    color: var(--light);
+    cursor: pointer;
 }
