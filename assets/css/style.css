@@ -50,6 +50,9 @@ html {
 }
 
 .gif-container {
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
     margin: 10px;
     width: 200px;
     height: 200px;
