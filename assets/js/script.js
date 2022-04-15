@@ -1,15 +1,4 @@
 const gifContainers = document.querySelectorAll(".gif-container")
-// const buttons = {
-// 	home: {
-// 		startBtn: document.getElementById("start-game-btn"),
-// 		statsBtn: document.getElementById("homepage-stats-btn"),
-// 		colourBtn: document.getElementById("colour-btn"),
-// 		aboutBtn: document.getElementById("about-btn")
-// 	},
-// 	gameOver : {
-
-// 	}
-// }
 
 const buttons = {
 	home: [
@@ -25,7 +14,6 @@ const buttons = {
 		{text: "", id: "other-btn"}
 	]
 }
-
 const cards = {
 	homeStats: [
 
@@ -34,12 +22,6 @@ const cards = {
 
 	]
 }
-
-let dynamicBlockElements = {}
-
-const numGifs = gifContainers.length
-let currentRound = {}
-let nextRound = {}
 const words = [
 	"happy",
 	"sad",
@@ -58,29 +40,35 @@ const words = [
 	"car",
 	"baby",
 	"space",
-	"chair"
+	"chair",
+	"video game",
+	"animal",
+	"music"
 ]
+const numGifContainers = gifContainers.length
+const time = 60000;
+
+let score = 0
+let dynamicBlockElements = {}
+let currentRound = {}
+let nextRound = {}
+let nextRoundPrepared = false
 
 // initial function
 function init() {
+	prepareNextRound()
 	showButtons(buttons.home)
-	cascade(
-		0,
-		1,
-		4, 
-		index => elementFadeIn(gifContainers[index]),
-		()=>{}
-	)
+	cascade(gifContainers, el => elementFadeIn(el), false)
 }
 init()
 
 // start game function
 function startGame() {
-	hideButtons()
-	
-	prepareNextRound()
+	fadeGifsOut()
+
+	// wait an inital 500ms (for the fade out to complete) then begin to wait for next round to be ready to load
 	setTimeout(() => {
-		roundTransition()
+		blockAndWait(hideButtons, fadeGifsIn, startCountdown, loadNextRound, prepareNextRound)
 	}, 500);
 }
 
@@ -89,7 +77,18 @@ function startCountdown() {
 
 }
 
-// return random/s word from a given list
+// execute parsed function once the next round is finished preparing
+function blockAndWait(...functionArray) {
+	const waiter = setInterval(() => {
+		if (nextRoundPrepared === true) {
+			nextRoundPrepared = false;
+			clearInterval(waiter)
+			functionArray.forEach(funct => funct())
+		}
+	}, 100)
+}
+
+// return random word/s from a given list
 function returnRandomFromArray(wordsArray, num) {
 	var randomIndex;
 
@@ -134,7 +133,6 @@ function hideButtons() {
 	for (const btnKey in dynamicBlockElements) {
 		dynamicBlockElements[btnKey].style.display = "none";
 	}
-
 	dynamicBlockElements = {}
 }
 
@@ -158,47 +156,39 @@ function elementFadeOut(el) {
 
 // cascade fade the gifs out
 function fadeGifsOut() {
-	cascade(
-		numGifs-1,
-		-1,
-		numGifs, 
-		index => elementFadeOut(gifContainers[index]),
-		loadNextRound
-	)
+	cascade(gifContainers, el => elementFadeOut(el), true)
 }
 
 // cascade fade the gifs in
 function fadeGifsIn() {
-	cascade(
-		0,
-		1,
-		numGifs, 
-		index => elementFadeIn(gifContainers[index]),
-		prepareNextRound
-	)
+	cascade(gifContainers, el => elementFadeIn(el), false)
 }
 
-// 
+// transition between round
 function roundTransition() {
 	fadeGifsOut()
 
+	// wait an inital 500ms (for the fade out to complete) then begin to wait for next round to be ready to load
 	setTimeout(() => {
-		fadeGifsIn()
+		blockAndWait(loadNextRound, fadeGifsIn, prepareNextRound)
 	}, 500);
 }
 
 // do the api call to giphy api, ready for next round
 function prepareNextRound() {
-	nextRound = {}
+	console.log("preparing next round...")
 
 	const randomWord = returnRandomFromArray(words, 1)
+	nextRound = {}
 	nextRound.answer = randomWord
 
 	fetch("https://api.giphy.com/v1/gifs/search?api_key="+GIPHY_API_KEY+"&q="+randomWord+"&limit=50&offset=0&rating=g&lang=en")
 	.then(res => res.json())
 	.then(
 		data => {
-			nextRound.urls = returnRandomFromArray(data.data, 4)
+			nextRound.urls = returnRandomFromArray(data.data, numGifContainers)
+			nextRoundPrepared = true
+			console.log("Next round ready!")
 		}
 	)
 }
@@ -211,20 +201,20 @@ function loadNextRound() {
 }
 
 // execute a parsed function in intervals
-function cascade(start, increment, max, funct, callb) {
-	let index = start;
+function cascade(array, forEachLikeFunc, reverse=false) {
+	let localArray = [...array]
+	var index = 0
 
-	function innerCascade(max, funct, callb) {
-		setTimeout(() => {
-		if (max > 0) {
-			funct(index)
-			index = index + increment
-
-			innerCascade(max-1, funct, callb)
-		} else {
-			callb()
-			}
-		}, 100)
+	if (reverse===true) {
+		localArray.reverse()
 	}
-	innerCascade(max, funct, callb)
+
+	const cascadeInterval = setInterval(() => {
+		forEachLikeFunc(localArray[index])	
+		index++
+
+		if (index === localArray.length) {
+			clearInterval(cascadeInterval)
+		}
+	}, 100)
 }
