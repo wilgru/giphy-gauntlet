@@ -24,19 +24,32 @@ html {
     align-items: center;
 }
 
-.btn {
+.btn-block {
+    font-size: 30px;
+    background-color: var(--light);
+    width: 98%;
+    height: 98%;
+}
+
+.btn-block:hover {
+    background-color: var(--dark);
+    color: var(--light);
+    cursor: pointer;
+}
+
+/* .btn {
     background-color: var(--void);
     border: 2px solid var(--dark);
     border-radius: 50px;
     width: 300px;
     color: var(--dark);
-}
+} */
 
 /* header */
 #header-title {
     margin: 0;
     width: fit-content;
-    font-size: 70px;
+    font-size: 60px;
     border-bottom: 10px dotted var(--dark);
 }
 
@@ -50,6 +63,8 @@ html {
 }
 
 .gif-container {
+    transition: 200ms;
+    opacity: 0; 
     background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
@@ -59,8 +74,6 @@ html {
     background-color: var(--dark);
 }
 
-#start-game-btn:hover {
-    background-color: var(--dark);
-    color: var(--light);
-    cursor: pointer;
+.gif-container:hover {
+    box-shadow: var(--dark) 7px 7px !important;
 }
