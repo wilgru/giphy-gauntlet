@@ -63,7 +63,6 @@ html {
 }
 
 .gif-container {
-    transition: 200ms;
     opacity: 0; 
     background-position: center;
     background-size: cover;
@@ -72,6 +71,8 @@ html {
     width: 200px;
     height: 200px;
     background-color: var(--dark);
+
+    transition: 200ms;
 }
 
 .gif-container:hover {
