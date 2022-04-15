@@ -16,36 +16,66 @@
     <title>Gipher</title>
 </head>
 <body>
-    <header>
-        <div class="col-container" id="header-container">
-            <h1 id="header-title">Giphy Gauntlet</h1>
-        </div>
-    </header>
-
     <main>
         <div id="main-container">
-            <div class="col-container">
-                <div class="row-container">
-                    <div class="col-container gif-container" data-gif-index="0">
+            <div class="col-container" id="main-block">
+                <!-- top container -->
+                <div class="row-container" id="top-container">
+                    <div class="col-container">
+                        <div class="row-container" id="header-row">
+                            <h1 id="header-title">Giphy Gauntlet</h1>
 
-                    </div>
-                    <div class="col-container gif-container" data-gif-index="1">
+                            <div class="col-container" id="round-info-simple">
+                                <div class="row-container round-info-inner-card">
+                                    <h2 class="round-info-item score-info">
+                                        Score: 0
+                                    </h2>
+                                    <h2 class="round-info-item time-info">
+                                        00s
+                                    </h2>
+                                </div>
+                            </div>
 
+                            <div class="col-container" id="round-info-advanced">
+                                <div class="row-container round-info-inner-card">
+                                    <h2 class="round-info-item">
+                                        Test
+                                    </h2>
+                                    <h2 class="round-info-item">
+                                        test
+                                    </h2>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="row-container">
-                    <div class="col-container gif-container" data-gif-index="2">
 
-                    </div>
-                    <div class="col-container gif-container" data-gif-index="3">
+                <!-- middle container -->
+                <div class="row-container" id="middle-container">
+                    <div class="col-container">
+                        <div class="row-container">
+                            <div class="col-container gif-container" data-gif-index="0">
+                            </div>
+                            <div class="col-container gif-container" data-gif-index="1">
+                            </div>
+                        </div>
 
+                        <div class="row-container">
+                            <div class="col-container gif-container" data-gif-index="2">
+                            </div>
+                            <div class="col-container gif-container" data-gif-index="3">
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-container">
-                <!-- <div class="row-container">
-                    <button class="btn" id="start-game-btn">Play!</button>
-                </div> -->
+
+                <!-- bottom container -->
+                <div class="row-container" id="bottom-container">
+                    <form id="guess-form">
+                        <input type="text" id="guess-input">
+                        <input type="submit" hidden>
+                    </form>
+                </div>
             </div>
         </div>
     </main>
