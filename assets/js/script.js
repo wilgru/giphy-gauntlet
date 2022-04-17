@@ -7,17 +7,54 @@ const scoreInfo = document.querySelector(".score-info")
 const guessform = document.getElementById("guess-form")
 const guessInput = document.getElementById("guess-input")
 const headerChildren = {
-	title: headerRow.children[0],
-	roundInfoSimple: headerRow.children[1],
-	roundInfoAdvanced: headerRow.children[2]
+	title: {
+		element: headerRow.children[0],
+		shadow: false
+	},
+	roundInfoSimple: {
+		element: headerRow.children[1],
+		shadow: true
+	},
+	roundInfoAdvanced: {
+		element: headerRow.children[2],
+		shadow: true
+	},
+	gameOverTitle: {
+		element: headerRow.children[3],
+		shadow: true
+	}
 }
 //this is an array of the elements in the headerchildren object. It exists so that it can be spread out as arguenments for the fade in/out functions. 
 //this is done so that the switch header display function only worries about changing the element currently displayed, but does not interefere with the opacity at all.
-const headerChildrenArrayOfEls = Object.values(headerChildren)
+// const headerChildrenArrayOfEls = Object.values(headerChildren)
+// GG_DATA = {
+// 	highestScore: 0,
+// 	highestScoreDate: 0,
+// 	guessesCorrect: 0,
+// 	guessesIncorrect: 0,
+// 	gps: 0
+// }
+
+// 
+const pages = {
+	home: {
+		headerEl: "",
+		tileType: "buttons",
+		typeSet: buttons.home,
+		showInput: false
+	}
+}
+
+currentPageSchhedule = []
+
+function renderPage(page) {
+
+}
 
 // global static vars
+const delay = 100
 const numGifContainers = gifContainers.length
-const totalTime = 6000;
+const totalTime = 60;
 const buttons = {
 	home: [
 		{key: "playBtn", text: "Play", id: "play-btn"},
@@ -26,18 +63,30 @@ const buttons = {
 		{key: "aboutBtn", text: "about", id: "about-btn"}
 	],
 	gameOver: [
-		{text: "Play Again", id: "play-again-btn"},
-		{text: "Game Stats", id: "game-over-stats-btn"},
-		{text: "Home", id: "home-btn"},
-		{text: "", id: "other-btn"}
+		{key: "playAgainBtn", text: "Play Again", id: "play-again-btn"},
+		{key: "gameStatsBtn", text: "Game Stats", id: "game-over-stats-btn"},
+		{key: "homeBtn", text: "Home", id: "home-btn"},
+		{key: "otherBtn", text: "", id: "other-btn"}
 	]
 }
 const cards = {
 	homeStats: [
-
+		{key: "highScoreCard", text: {title: "High Score:", data: "--", subTitle: "--/--/--"}, id: "high-score-card"},
+		{key: "accuracyCard", text: {title: "Accuracy:", data: "--", subTitle: "✔︎ -- | ✗ --" }, id: "accuracy-card"},
+		{key: "gifsPerSecCard", text: {title: "Gifs per Sec:", data: "--", subTitle: "gps" }, id: "gifs-per-sec-card"},
+		{key: "backBtn", text: "Back", id: "back-btn"},
 	],
 	gameOverStats: [
-
+		{key: "gameOverScoreCard", text: {title: "Score:", data: "--", subTitle: "+/-" }, id: "game-over-score-card"},
+		{key: "gameOveraccuracyCard", text: {title: "Accuracy:", data: "--", subTitle: "+/-" }, id: "game-over-accuracy-card"},
+		{key: "gameOvergifsPerSecCard", text: {title: "Gifs per Sec:", data: "--", subTitle: "+/-" }, id: "game-over-gifs-per-sec-card"},
+		{key: "backBtn", text: "Back", id: "back-btn"},
+	],
+	aboutInfo: [
+		{key: "authorCard", text: {title: "Author", data: "William Gruszka", subTitle: "" }, id: "game-over-score-card"},
+		{key: "linksCard", text: {title: "Find out more", data: "<a href='https://github.com'>Github.com</a>", subTitle: "" }, id: "game-over-accuracy-card"},
+		{key: "Api", text: {title: "made using", data: "<a href='https://giphy.com'>Giphy API</a>", subTitle: "" }, id: "game-over-gifs-per-sec-card"},
+		{key: "backBtn", text: "Back", id: "back-btn"},
 	]
 }
 const words = [
@@ -47,7 +96,6 @@ const words = [
 	"scared",
 	"excited",
 	"love",
-	"lonely",
 	"cringe",
 	"book",
 	"water",
@@ -61,59 +109,178 @@ const words = [
 	"chair",
 	"video game",
 	"animal",
-	"music"
+	"music",
+	"computer"
 ]
 
-// game play vars
-let score = 0
+// game play ad page vars
 let dynamicBlockElements = {}
+let currentTopPage = "home"
 let currentRound = {}
 let currentRoundWord = ""
+let score = 0
 let nextRound = {}
 let nextRoundPrepared = false
 
 // initial function
 function init() {
-	prepareNextRound()
-	showButtons(buttons.home)
-	cascade(gifContainers, el => elementFadeIn(el), false)
+	homeScreen()
 }
 init()
 
-// start game function
-function startGame() {
+// home screen
+function homeScreen() {
+	currentTopPage = "home"
+	prepareNextRound()
 	fadeGifsOut()
 
 	// wait an inital 500ms (for the fade out to complete) then fade out the header, then begin to wait for next round to be ready to load
 	setTimeout(() => {
-		elementFadeOut(...headerChildrenArrayOfEls) 
-		blockAndWait(hideButtons, fadeGifsIn, startCountdown, loadNextRound, prepareNextRound)
+		headerFadeOut() 
+		showButtons(buttons.home)
 
 		// wait 250ms for buttons to fade out then then change header
 		setTimeout(()=>{
-			switchHeaderDisplay("roundInfoSimple")
+			headerFadeIn(headerChildren["title"])
+			fadeGifsIn()
+		}, 500)
+	}, 650);
+}
 
-			// wait 50ms for header to be changed then fade in new header
-			setTimeout(()=>{
-				elementFadeIn(...headerChildrenArrayOfEls)
-				elementFadeIn(guessInput)
-			}, 50)
-		}, 250)
+// start game function
+function startGame() {
+	currentTopPage = "game"
+	fadeGifsOut()
+
+	// wait an inital 500ms (for the fade out to complete) then fade out the header, then begin to wait for next round to be ready to load
+	setTimeout(() => {
+		headerFadeOut() 
+
+		// wait 250ms for buttons to fade out then then change header
+		setTimeout(()=>{
+			headerFadeIn(headerChildren["roundInfoSimple"])
+			elementFadeIn(guessInput)
+			blockAndWait(hideButtons, fadeGifsIn, startCountdown, loadNextRound, prepareNextRound)
+		}, 500)
+	}, 650);
+}
+
+// call at end of game
+function gameOver() {
+	currentTopPage = "game over"
+	fadeGifsOut()
+	elementFadeOut(guessInput)
+
+	// wait an inital 500ms (for the fade out to complete) then fade out the header, then begin to wait for next round to be ready to load
+	setTimeout(() => {
+		clearBackgroundGifs()
+		headerFadeOut() 
+		showButtons(buttons.gameOver)
+
+		// wait 250ms for buttons to fade out then then change header
+		setTimeout(()=>{
+			headerFadeIn(headerChildren["gameOverTitle"])
+			fadeGifsIn()
+		}, 500)
+	}, 650);
+}
+
+// render submenu
+function submenu(cardSet) {
+	fadeGifsOut()
+
+	// wait an inital 500ms (for the fade out to complete) then fade out the header, then begin to wait for next round to be ready to load
+	setTimeout(() => {
+		headerFadeOut() 
+		renderCards(cardSet)
+
+		// wait 250ms for buttons to fade out then then change header
+		setTimeout(()=>{
+			headerFadeIn(headerChildren["title"])
+			cascade(gifContainers, el => elementFadeIn(el), false)
+		}, 500)
+	}, 650);
+}
+
+// go back to the page before 
+function goBack() {
+	switch (currentTopPage) {
+		case "home":
+			homeScreen()
+			break;
+		case "game over":
+			gameOver()
+			break;
+	}
+}
+
+// render cards into gif containers
+function renderCards(cardSet) {
+	hideButtons()
+
+	const cardTemplate = ({ text, id }) => `
+	<div class="col-container card-block" id="${id}">
+		<h3>${text.title}</h3>
+		<p>${text.data}</p>
+		<h3>${text.subTitle}</h3>
+	</div>
+	`
+	const btnBlockTemplate = `
+	<btn class="col-container btn-block" id="back-btn" data-back-destination="home">
+			Back
+	</btn>
+	`
+
+	gifContainers.forEach(
+		(container, index) => {
+			if (cardSet[index].key != "backBtn") {
+				container.innerHTML = cardTemplate(cardSet[index])
+				dynamicBlockElements[cardSet[index].key] = document.getElementById(cardSet[index].id)
+			} else {
+				gifContainers[3].innerHTML = btnBlockTemplate
+				dynamicBlockElements["back"] = document.getElementById("back-btn")
+			}
+		}
+	)
+}
+
+// transition between round
+function roundTransition() {
+	fadeGifsOut()
+	score++
+	scoreInfo.innerHTML = `Score: ${score}`
+
+	// wait an inital 500ms (for the fade out to complete) then begin to wait for next round to be ready to load
+	setTimeout(() => {
+		blockAndWait(loadNextRound, fadeGifsIn, prepareNextRound)
 	}, 500);
 }
 
 // start the game countdown
 function startCountdown() {
-	timeLeft = totalTime
+	timeLeft = totalTime;
 
-	const timer = setInterval(() => {
-		timeLeft--
-		timeInfo.innerHTML = (timeLeft/100).toFixed(2)
+	// var timer = setInterval(function() {
+	// 	timeLeft--
+	// 	// timeInfo.innerHTML = (timeLeft/100).toFixed(2)
+	// 	timeInfo.innerHTML = timeLeft
+	// 	if (timeLeft === 0){
+	// 		clearInterval(timer)
+	// 		gameOver()
+	// 	}
+	// }, 1000);
 
-		if (timeLeft === 0){
-			clearInterval(timer)
-		}
-	}, 10);
+	(function loop() {
+		setTimeout(function() {
+			timeInfo.innerHTML = timeLeft
+			if (timeLeft == 0){
+				gameOver();
+			} else {
+				timeLeft--
+				loop();
+			}
+		}, 1000);
+	})();
 }
 
 // execute parsed function once the next round is finished preparing
@@ -130,7 +297,6 @@ function blockAndWait(...functionArray) {
 // return random word/s from a given list
 function returnRandomFromArray(wordsArray, num) {
 	var randomIndex;
-
 	if (num === 1) {
 		var randomWord;
 		while(randomWord === undefined) {
@@ -158,22 +324,12 @@ function showButtons(btnSet) {
 			${text}
 	</btn>
 	`
-
 	gifContainers.forEach(
 		(container, index) => {
 				container.innerHTML = btnBlockTemplate(btnSet[index])
 				dynamicBlockElements[btnSet[index].key] = document.getElementById(btnSet[index].id)
 			}
 		)
-}
-
-// choose which child of te header tag to display
-function switchHeaderDisplay(childIndex) {
-	const desiredEl = headerChildren[childIndex]
-	for (key in headerChildren) {
-		headerChildren[key].style.display = "none"
-	}
-	desiredEl.style.display = "flex"
 }
 
 // hide any buttons currently on the page
@@ -187,11 +343,10 @@ function hideButtons() {
 // fade element in with box shadow
 function elementFadeIn(...els) {
 	els.forEach(el => {
-		el.style.opacity = "1"
-
+		el.style.opacity = 1
 		setTimeout(() => {
 			el.style.boxShadow = "var(--dark) 5px 5px"
-		}, 100);
+		}, delay);
 	})
 }
 
@@ -199,11 +354,42 @@ function elementFadeIn(...els) {
 function elementFadeOut(...els) {
 	els.forEach(el => {
 		el.style.boxShadow = "var(--dark) 0 0"
-
 		setTimeout(() => {
-			el.style.opacity = "0" 
-		}, 100);
+			el.style.opacity = 0
+		}, delay);
 	})
+}
+
+// choose which child of te header tag to display
+function switchHeaderDisplay(headerEl) {
+	const desiredEl = headerEl.element
+	for (key in headerChildren) {
+		headerChildren[key].element.style.display = "none"
+	}
+	desiredEl.style.display = "flex"
+}
+
+// fade header in
+function headerFadeIn(headerEl) {
+	switchHeaderDisplay(headerEl)
+	setTimeout(() => {
+		headerEl.element.style.opacity = 1
+		setTimeout(() => {
+			if (headerEl.shadow) headerEl.element.style.boxShadow = "var(--dark) 5px 5px"
+		}, delay);
+	}, 1);
+}
+
+// fade header out
+function headerFadeOut() {
+	for(header in headerChildren){
+		if (headerChildren[header].shadow) headerChildren[header].element.style.boxShadow = "var(--dark) 0 0"
+	}
+	setTimeout(() => {
+		for(header in headerChildren){
+			headerChildren[header].element.style.opacity = 0
+		}
+	}, delay);
 }
 
 // cascade fade the gifs out
@@ -214,18 +400,6 @@ function fadeGifsOut() {
 // cascade fade the gifs in
 function fadeGifsIn() {
 	cascade(gifContainers, el => elementFadeIn(el), false)
-}
-
-// transition between round
-function roundTransition() {
-	fadeGifsOut()
-	score++
-	scoreInfo.innerHTML = `Score: ${score}`
-
-	// wait an inital 500ms (for the fade out to complete) then begin to wait for next round to be ready to load
-	setTimeout(() => {
-		blockAndWait(loadNextRound, fadeGifsIn, prepareNextRound)
-	}, 500);
 }
 
 // do the api call to giphy api, ready for next round
@@ -257,6 +431,13 @@ function loadNextRound() {
 	)
 }
 
+// clear any gifs set as backgrounds for the gif comtainers
+function clearBackgroundGifs() {
+	gifContainers.forEach(
+		(item, key) => item.style.backgroundImage = "none"
+	)
+}
+
 // execute a parsed function in intervals
 function cascade(array, forEachLikeFunc, reverse=false) {
 	let localArray = [...array]
@@ -273,13 +454,36 @@ function cascade(array, forEachLikeFunc, reverse=false) {
 		if (index === localArray.length) {
 			clearInterval(cascadeInterval)
 		}
-	}, 100)
+	}, delay)
 }
 
 // cleanup input
 function cleanInput(word) {
-	const cleanWord = word.toLowerCase.trim()
+	const cleanWord = word.toLowerCase().trim()
 	return cleanWord
+}
+
+// check input
+function checkGuessCorrect(guess) {
+	if (guess === currentRoundWord){
+		console.log("Correct!")
+		tempStyler(guessInput, "backgroundColor", "green")
+		roundTransition()
+	} else {
+		console.log("Incorrect!")
+		tempStyler(guessInput, "backgroundColor", "red")
+	}
+}
+
+// temporary styling for given element
+function tempStyler(el, styleProp, value) {
+	originalValue = el.style[styleProp]
+
+	el.style[styleProp] = value
+
+	setTimeout(() => {
+		el.style[styleProp] = originalValue
+	}, 500);
 }
 
 // event listeners
@@ -287,8 +491,29 @@ gifContainers.forEach(container => {
 	container.addEventListener("click", (event) => {
 		const clickedContainer = event.target
 
-		if (clickedContainer.id === "play-btn") {
-			startGame()
+		switch (clickedContainer.id) {
+			case "play-btn":
+				startGame()
+				break;
+			case "play-again-btn":
+				startGame()
+				break;
+			case "home-btn":
+				homeScreen()
+				break;
+			case "homepage-stats-btn":
+				submenu(cards.homeStats)
+				break;
+			case "game-over-stats-btn":
+				submenu(cards.gameOverStats)
+				break;
+			case "about-btn":
+				submenu(cards.aboutInfo)
+				break;
+			case "back-btn":
+				goBack()
+				break;
+
 		}
 	})
 })
@@ -296,5 +521,7 @@ gifContainers.forEach(container => {
 guessform.addEventListener("submit", (event) => {
 	event.preventDefault()
 	let guess = cleanInput(guessInput.value)
-	
+	guessInput.value = ""
+
+	checkGuessCorrect(guess)
 })
