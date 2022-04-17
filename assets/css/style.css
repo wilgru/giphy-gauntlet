@@ -1,6 +1,7 @@
 /* universal */
 :root {
     --light: rgb(249, 242, 184);
+    --mid: rgb(192, 187, 142);
     --dark: rgb(115, 112, 78);
     --void: rgba(0, 0, 0, 0)
 }
@@ -25,6 +26,23 @@ html {
     flex-direction: row;
     align-items: center;
     justify-content: space-evenly;
+}
+
+.card-block {
+    background-color: var(--light);
+    width: 98%;
+    height: 98%;
+}
+
+.card-block h3 {
+    margin: 0;
+    font-size: 15px;
+}
+
+.card-block p {
+    text-align: center;
+    margin: 0;
+    font-size: 30px;
 }
 
 .btn-block {
@@ -67,12 +85,13 @@ html {
 
 #header-row {
     height: 120px;
+    transition: 200ms;
 }
 
 #header-title {
     margin: 0;
-    transition: 200ms;
-    display: none;
+    opacity: 0;
+    display: flex;
     width: fit-content;
     font-size: 60px;
     border-bottom: 10px dotted var(--dark);
@@ -82,7 +101,8 @@ html {
 #round-info-simple {
     height: 50%;
     margin: 10px;
-    display: none;
+    opacity: 0;
+    display: flex;
     width: 100%;
     background-color: var(--dark);
     transition: 200ms;
@@ -90,7 +110,8 @@ html {
 
 #round-info-advanced {
     margin: 10px;
-    display: none;
+    opacity: 0;
+    display: flex;
     width: 100%;
     justify-content: space-around;
     transition: 200ms;
@@ -111,7 +132,8 @@ html {
 #game-over-title {
     height: 50%;
     margin: 10px;
-    display: none;
+    opacity: 0;
+    display: flex;
     width: 100%;
     background-color: var(--dark);
     transition: 200ms;
