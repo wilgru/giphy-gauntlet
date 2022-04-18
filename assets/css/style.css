@@ -1,8 +1,5 @@
 /* universal */
 :root {
-    --light: rgb(249, 242, 184);
-    --mid: rgb(192, 187, 142);
-    --dark: rgb(115, 112, 78);
     --void: rgba(0, 0, 0, 0)
 }
 
@@ -29,6 +26,7 @@ html {
 }
 
 .card-block {
+    text-align: center;
     background-color: var(--light);
     width: 98%;
     height: 98%;
@@ -40,12 +38,12 @@ html {
 }
 
 .card-block p {
-    text-align: center;
     margin: 0;
     font-size: 30px;
 }
 
 .btn-block {
+    text-align: center;
     font-size: 30px;
     background-color: var(--light);
     width: 98%;
@@ -56,6 +54,15 @@ html {
     background-color: var(--dark);
     color: var(--light);
     cursor: pointer;
+}
+
+.gif-block {
+    background-color: var(--light);
+    width: 98%;
+    height: 98%;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
 /* .btn {
@@ -142,9 +149,6 @@ html {
 /* middle container */
 .gif-container {
     opacity: 0; 
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
     margin: 10px;
     width: 200px;
     height: 200px;
