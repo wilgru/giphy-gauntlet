@@ -1,8 +1,5 @@
 /* universal */
 :root {
-    --light: rgb(249, 242, 184);
-    --mid: rgb(192, 187, 142);
-    --dark: rgb(115, 112, 78);
     --void: rgba(0, 0, 0, 0)
 }
 
