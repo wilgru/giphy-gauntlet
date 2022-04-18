@@ -7,24 +7,123 @@ const scoreInfo = document.querySelector(".score-info")
 const guessform = document.getElementById("guess-form")
 const guessInput = document.getElementById("guess-input")
 
-const GG_DATA = {
-	config: {
-		ms: false,
-		roundDisplay: "simple"
-	},
-	stats: {
-		highestScore: 0,
-		highestScoreDate: 0,
-		guessesCorrect: 0,
-		guessesIncorrect: 0,
-		gps: 0
-	}
-}
-
 // global static vars
 const delay = 100
 const numGifContainers = gifContainers.length
 const totalTime = 60;
+
+const themes = [
+	{
+		light: "rgb(249, 242, 184)",
+		mid: "rgb(192, 187, 142)",
+		dark: "rgb(115, 112, 78)",
+	},
+	{
+		light: "rgb(243, 184, 249)",
+		mid: "rgb(185, 142, 192)",
+		dark: "rgb(114, 78, 115)",
+	},
+	{
+		light: "rgb(189, 249, 184)",
+		mid: "rgb(149, 192, 142)",
+		dark: "rgb(78, 115, 80)",
+	},
+	{
+		light: "rgb(213, 247, 255)",
+		mid: "rgb(159, 203, 213)",
+		dark: "rgb(255, 154, 40)",
+	},
+	{
+		light: "rgb(250, 233, 189)",
+		mid: "rgb(211, 197, 143)",
+		dark: "rgb(13, 100, 36)",
+	},
+	{
+		light: "rgb(233, 182, 255)",
+		mid: "rgb(177, 133, 200)",
+		dark: "rgb(33, 118, 117)",
+	},
+	{
+		light: "rgb(255, 255, 255)",
+		mid: "rgb(201, 201, 201)",
+		dark: "rgb(80, 83, 84)",
+	},
+	{
+		light: "rgb(255, 0, 0)",
+		mid: "rgb(0, 0, 255)",
+		dark: "rgb(0, 255, 0)",
+	}
+]
+
+let GG_DATA
+// {
+// 	config: {
+// 		ms: false,
+// 		roundDisplay: "simple",
+// 		theme: 0
+// 	},
+// 	stats: {
+// 		highestScore: 0,
+// 		highestScoreDate: 0,
+// 		guessesCorrect: 0,
+// 		guessesIncorrect: 0,
+// 		gps: 0,
+// 		numGames: 0,
+// 	}
+// }
+
+function getStorage() {
+	GG_DATA = JSON.parse(localStorage.getItem("GG_DATA"))
+	if (GG_DATA === null) {
+		initGG_DATA()
+	}
+}
+
+function initGG_DATA() {
+	GG_DATA =
+	{
+		config: {
+			ms: false,
+			roundDisplay: "simple",
+			theme: 0
+		},
+		stats: {
+			highestScore: 0,
+			highestScoreDate: 0,
+			guessesCorrect: 0,
+			guessesIncorrect: 0,
+			gps: 0,
+			avgScore: 0,
+			numGames: 0,
+		}
+	}
+}
+
+function setStorage(config, stats) {
+	if (config) {
+		GG_DATA.config.ms = false,
+		GG_DATA.config.roundDisplay = "simple",
+		GG_DATA.config.theme = themeIndex
+	}
+
+	if (stats) {
+		const today = new Date()
+		GG_DATA.stats.guessesCorrect += correctGuesses
+		GG_DATA.stats.guessesIncorrect += incorrectGuesses
+		GG_DATA.stats.numGames++
+		// GG_DATA.stats.gps = (GG_DATA.stats.gps + (score/60)) / 2
+		if  (score > GG_DATA.stats.highestScore) {
+			GG_DATA.stats.highestScore = score
+			if (GG_DATA.stats.avgScore === 0) {
+				GG_DATA.stats.avgScore = score
+			} else {
+				GG_DATA.stats.avgScore = (GG_DATA.stats.avgScore + score) / 2
+			}
+			GG_DATA.stats.highestScoreDate = today.getDate() + "/" + today.getMonth() + "/" + today.getFullYear()
+		}
+	}
+	localStorage.setItem("GG_DATA", JSON.stringify(GG_DATA))
+}
 
 const headerChildren = {
 	title: {
@@ -45,56 +144,59 @@ const headerChildren = {
 	}
 }
 
-const buttons = {
-	home: [
-		{key: "playBtn", text: "Play", id: "play-btn"},
-		{key: "statsBtn", text: "Stats", id: "homepage-stats-btn"},
-		{key: "settingsBtn", text: "Settings", id: "settings-btn"},
-		{key: "aboutBtn", text: "about", id: "about-btn"}
-	],
-	settings: [
-		{key: "msToggleBtn", text: "Toggle ms", id: "ms-deptoggleth-btn"},
-		{key: "roundDisplayBtn", text: "Round Display", id: "round-display-btn"},
-		{key: "themeBtn", text: "Theme", id: "theme-btn"},
-		{key: "backBtn", text: "Back", id: "back-btn"}
-	],
-	gameOver: [
-		{key: "playAgainBtn", text: "Play Again", id: "play-again-btn"},
-		{key: "gameStatsBtn", text: "Game Stats", id: "game-over-stats-btn"},
-		{key: "settingsBtn", text: "Settings", id: "settings-btn"},
-		{key: "homeBtn", text: "Home", id: "home-btn"}
-	]
+function updateButtonsData() {
+	buttons = {
+		home: [
+			{key: "playBtn", text: "Play", id: "play-btn"},
+			{key: "statsBtn", text: "Stats", id: "homepage-stats-btn"},
+			{key: "settingsBtn", text: "Settings", id: "settings-btn"},
+			{key: "aboutBtn", text: "about", id: "about-btn"}
+		],
+		settings: [
+			{key: "msToggleBtn", text: "Toggle ms", id: "ms-deptoggleth-btn"},
+			{key: "roundDisplayBtn", text: "Round Display", id: "round-display-btn"},
+			{key: "themeBtn", text: "Theme", id: "theme-btn"},
+			{key: "backBtn", text: "Back", id: "back-btn"}
+		],
+		gameOver: [
+			{key: "playAgainBtn", text: "Play Again", id: "play-again-btn"},
+			{key: "gameStatsBtn", text: "Game Stats", id: "game-over-stats-btn"},
+			{key: "settingsBtn", text: "Settings", id: "settings-btn"},
+			{key: "homeBtn", text: "Home", id: "home-btn"}
+		]
+	}
 }
 
-const cards = {
+function updateCardsData(){
+	cards = {
 	homeStats: [
-		{key: "highScoreCard", text: {title: "High Score:", data: "--", subTitle: "--/--/--"}, id: "high-score-card"},
-		{key: "accuracyCard", text: {title: "Accuracy:", data: "--", subTitle: "✔︎ -- | ✗ --" }, id: "accuracy-card"},
-		{key: "gifsPerSecCard", text: {title: "Gifs per Sec:", data: "--", subTitle: "Avg. score: --" }, id: "gifs-per-sec-card"},
+		{key: "highScoreCard", text: {title: "High Score:", data: `${GG_DATA.stats.highestScore}`, subTitle: `${GG_DATA.stats.highestScoreDate}`}, id: "high-score-card"},
+		{key: "accuracyCard", text: {title: "Accuracy:", data: `${Math.round(100*(GG_DATA.stats.guessesCorrect/(GG_DATA.stats.guessesCorrect+GG_DATA.stats.guessesIncorrect)))+"%"}`, subTitle: `✔︎ ${GG_DATA.stats.guessesCorrect} | ✗ ${GG_DATA.stats.guessesIncorrect}` }, id: "accuracy-card"},
+		{key: "gifsPerSecCard", text: {title: "Gifs per Sec:", data: `${(GG_DATA.stats.guessesCorrect/(GG_DATA.stats.numGames*60)).toString().slice(0, 4).slice(0, 4)}`, subTitle: `Avg. score: ${GG_DATA.stats.avgScore}` }, id: "gifs-per-sec-card"},
 		{key: "backBtn", text: "Back", id: "back-btn"},
 	],
 	gameOverStats: [
-		{key: "gameOverScoreCard", text: {title: "Score:", data: "--", subTitle: "+/-" }, id: "game-over-score-card"},
-		{key: "gameOveraccuracyCard", text: {title: "Accuracy:", data: "--", subTitle: "+/-" }, id: "game-over-accuracy-card"},
-		{key: "gameOvergifsPerSecCard", text: {title: "Gifs per Sec:", data: "--", subTitle: "+/-" }, id: "game-over-gifs-per-sec-card"},
+		{key: "gameOverScoreCard", text: {title: "Score:", data: `${score}`, subTitle: "+/-" }, id: "game-over-score-card"},
+		{key: "gameOverAccuracyCard", text: {title: "Accuracy:", data: `${Math.round(100*(correctGuesses/(correctGuesses+incorrectGuesses)))+"%"}`, subTitle: "+/-" }, id: "game-over-accuracy-card"},
+		{key: "gameOverGifsPerSecCard", text: {title: "Gifs per Sec:", data: `${(score/60).toString().slice(0, 4)}`, subTitle: "+/-" }, id: "game-over-gifs-per-sec-card"},
 		{key: "backBtn", text: "Back", id: "back-btn"},
 	],
-	aboutInfo: [
+	about: [
 		{key: "authorCard", text: {title: "Author", data: "William Gruszka", subTitle: "" }, id: "game-over-score-card"},
-		{key: "linksCard", text: {title: "Explore the repo:", data: "<a href='https://github.com/wilgru/Gipher'>Github.com</a>", subTitle: "" }, id: "game-over-accuracy-card"},
-		{key: "Api", text: {title: "made using", data: "<a href='https://developers.giphy.com/'>Giphy API</a>", subTitle: "" }, id: "game-over-gifs-per-sec-card"},
+		{key: "Api", text: {title: "made with", data: "<a href='https://developers.giphy.com/'>Giphy API</a>", subTitle: "" }, id: "game-over-gifs-per-sec-card"},
+		{key: "linksCard", text: {title: "Find out more:", data: "<a href='https://github.com/wilgru/Gipher'>Github.com</a>", subTitle: "" }, id: "game-over-accuracy-card"},
 		{key: "backBtn", text: "Back", id: "back-btn"},
 	]
-}
+}}
 
-// 
 const pages = {
 	home: {
 		pageType: "top",
 		pageName: "home",
 		headerEl: headerChildren.title,
 		tileType: "buttons",
-		typeSet: buttons.home,
+		tileTypeKey: "home",
+		// typeSet: buttons.home,
 		showInput: false
 	},
 	gamePlay: {
@@ -102,7 +204,8 @@ const pages = {
 		pageName: "gamePlay",
 		headerEl: headerChildren.roundInfoSimple,
 		tileType: "gifs",
-		typeSet: "none",
+		tileTypeKey: "none",
+		// typeSet: "none",
 		showInput: true
 	},
 	gameOver: {
@@ -110,7 +213,8 @@ const pages = {
 		pageName: "gameOver",
 		headerEl: headerChildren.gameOverTitle,
 		tileType: "buttons",
-		typeSet: buttons.gameOver,
+		tileTypeKey: "gameOver",
+		// typeSet: buttons.gameOver,
 		showInput: false
 	},
 	homeStats: {
@@ -118,7 +222,8 @@ const pages = {
 		pageName: "homeStats",
 		headerEl: headerChildren.title,
 		tileType: "cards",
-		typeSet: cards.homeStats,
+		tileTypeKey: "homeStats",
+		// typeSet: cards.homeStats,
 		showInput: false
 	},
 	settings: {
@@ -126,7 +231,8 @@ const pages = {
 		pageName: "settings",
 		headerEl: headerChildren.title,
 		tileType: "buttons",
-		typeSet: buttons.settings,
+		tileTypeKey: "settings",
+		// typeSet: buttons.settings,
 		showInput: false
 	},
 	about: {
@@ -134,7 +240,8 @@ const pages = {
 		pageName: "about",
 		headerEl: headerChildren.title,
 		tileType: "cards",
-		typeSet: cards.aboutInfo,
+		tileTypeKey: "about",
+		// typeSet: cards.aboutInfo,
 		showInput: false
 	},
 	gameOverStats: {
@@ -142,7 +249,8 @@ const pages = {
 		pageName: "gameOverStats",
 		headerEl: headerChildren.title,
 		tileType: "cards",
-		typeSet: cards.gameOverStats,
+		tileTypeKey: "gameOverStats",
+		// typeSet: cards.gameOverStats,
 		showInput: false
 	},
 }
@@ -171,6 +279,10 @@ const words = [
 	"computer"
 ]
 
+// css root
+const root = document.documentElement;
+let themeIndex
+
 //page vars
 let dynamicBlockElements = {}
 let currentTopPage = "home"
@@ -179,12 +291,23 @@ let currentPageSchedule = []
 //game vars
 let currentRound = {}
 let currentRoundWord = ""
-let score = 0
 let nextRound = {}
 let nextRoundPrepared = false
+let score = 0
+let correctGuesses = 0
+let incorrectGuesses = 0
+
+// cards ad buttons vars
+let cards
+let buttons
 
 // initial function
 ;(function init() {
+	getStorage()
+	updateCardsData()
+	updateButtonsData()
+	themeIndex = GG_DATA.config.theme
+	setTheme(themeIndex)
 	prepareNextRound()
 	removeCurrentPage(pages.home)
 })()
@@ -197,7 +320,7 @@ function removeCurrentPage(page) {
 		if (index >= 0) {
 			elementFadeOut(currentPageSchedule[index].element, currentPageSchedule[index].shadow)
 		} else if (index === -1) {
-			// basically just wait a second
+			// basically just wait an iteration
 		} else {
 			clearInterval(pageCascader)
 			pageSetup(page)
@@ -222,10 +345,12 @@ function pageSetup(page) {
 
 	switch (page.tileType) {
 		case "buttons":
-			setButtons(page.typeSet)
+			updateButtonsData()
+			setButtons(buttons[page.tileTypeKey])
 			break;
 		case "cards":
-			setCards(page.typeSet)
+			updateCardsData()
+			setCards(cards[page.tileTypeKey])
 			break;
 		case "gifs":
 			setGifs()
@@ -258,6 +383,20 @@ function renderCurrentPage() {
 //
 function unsetTiles() {
 	gifContainers.forEach(container => container.innerHTML = "")
+}
+
+//
+function updateTypeSet(page) {
+	switch (page.tileType) {
+	case "buttons":
+		updateButtonsData()
+		page.typeSet = buttons[page.tileTypeKey]
+		break;
+	case "cards":
+		updateCardsData()
+		page.typeSet = cards[page.tileTypeKey]
+		break;
+	}
 }
 
 // home screen
@@ -417,6 +556,7 @@ function startCountdown() {
 			timeInfo.innerHTML = timeLeft
 			if (timeLeft == 0){
 				removeCurrentPage(pages.gameOver);
+				setStorage(false, true)
 			} else {
 				timeLeft--
 				loop();
@@ -594,6 +734,20 @@ function clearBackgroundGifs() {
 	)
 }
 
+function setTheme() {
+	root.style.setProperty('--light', themes[themeIndex].light);
+	root.style.setProperty('--mid', themes[themeIndex].mid);
+	root.style.setProperty('--dark', themes[themeIndex].dark);
+}
+
+//
+function switchTheme() {
+	themeIndex++
+	if (themeIndex > themes.length-1) themeIndex = 0
+	setTheme()
+	setStorage(true, false)
+}
+
 // execute a parsed function in intervals
 function cascade(array, forEachLikeFunc, reverse=false) {
 	let localArray = [...array]
@@ -622,10 +776,12 @@ function cleanInput(word) {
 // check input
 function checkGuessCorrect(guess) {
 	if (guess === currentRoundWord){
+		correctGuesses++
 		console.log("Correct!")
 		tempStyler(guessInput, "backgroundColor", "green")
 		roundTransition()
 	} else {
+		incorrectGuesses++
 		console.log("Incorrect!")
 		tempStyler(guessInput, "backgroundColor", "red")
 	}
@@ -649,9 +805,15 @@ gifContainers.forEach(container => {
 
 		switch (clickedContainer.id) {
 			case "play-btn":
+				score = 0
+				correctGuesses = 0
+				incorrectGuesses = 0
 				removeCurrentPage(pages.gamePlay)
 				break;
 			case "play-again-btn":
+				score = 0
+				correctGuesses = 0
+				incorrectGuesses = 0
 				removeCurrentPage(pages.gamePlay)
 				break;
 			case "home-btn":
@@ -668,6 +830,9 @@ gifContainers.forEach(container => {
 				break;
 			case "settings-btn":
 				removeCurrentPage(pages.settings)
+				break;
+			case "theme-btn":
+				switchTheme()
 				break;
 			case "back-btn":
 				removeCurrentPage(pages[currentTopPage])
