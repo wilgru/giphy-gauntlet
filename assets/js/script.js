@@ -72,59 +72,6 @@ let GG_DATA
 // 	}
 // }
 
-function getStorage() {
-	GG_DATA = JSON.parse(localStorage.getItem("GG_DATA"))
-	if (GG_DATA === null) {
-		initGG_DATA()
-	}
-}
-
-function initGG_DATA() {
-	GG_DATA =
-	{
-		config: {
-			ms: false,
-			roundDisplay: "simple",
-			theme: 0
-		},
-		stats: {
-			highestScore: 0,
-			highestScoreDate: 0,
-			guessesCorrect: 0,
-			guessesIncorrect: 0,
-			gps: 0,
-			avgScore: 0,
-			numGames: 0,
-		}
-	}
-}
-
-function setStorage(config, stats) {
-	if (config) {
-		GG_DATA.config.ms = false,
-		GG_DATA.config.roundDisplay = "simple",
-		GG_DATA.config.theme = themeIndex
-	}
-
-	if (stats) {
-		const today = new Date()
-		GG_DATA.stats.guessesCorrect += correctGuesses
-		GG_DATA.stats.guessesIncorrect += incorrectGuesses
-		GG_DATA.stats.numGames++
-		// GG_DATA.stats.gps = (GG_DATA.stats.gps + (score/60)) / 2
-		if  (score > GG_DATA.stats.highestScore) {
-			GG_DATA.stats.highestScore = score
-			if (GG_DATA.stats.avgScore === 0) {
-				GG_DATA.stats.avgScore = score
-			} else {
-				GG_DATA.stats.avgScore = (GG_DATA.stats.avgScore + score) / 2
-			}
-			GG_DATA.stats.highestScoreDate = today.getDate() + "/" + today.getMonth() + "/" + today.getFullYear()
-		}
-	}
-	localStorage.setItem("GG_DATA", JSON.stringify(GG_DATA))
-}
-
 const headerChildren = {
 	title: {
 		element: headerRow.children[0],
@@ -144,51 +91,6 @@ const headerChildren = {
 	}
 }
 
-function updateButtonsData() {
-	buttons = {
-		home: [
-			{key: "playBtn", text: "Play", id: "play-btn"},
-			{key: "statsBtn", text: "Stats", id: "homepage-stats-btn"},
-			{key: "settingsBtn", text: "Settings", id: "settings-btn"},
-			{key: "aboutBtn", text: "about", id: "about-btn"}
-		],
-		settings: [
-			{key: "msToggleBtn", text: "Toggle ms", id: "ms-deptoggleth-btn"},
-			{key: "roundDisplayBtn", text: "Round Display", id: "round-display-btn"},
-			{key: "themeBtn", text: "Theme", id: "theme-btn"},
-			{key: "backBtn", text: "Back", id: "back-btn"}
-		],
-		gameOver: [
-			{key: "playAgainBtn", text: "Play Again", id: "play-again-btn"},
-			{key: "gameStatsBtn", text: "Game Stats", id: "game-over-stats-btn"},
-			{key: "settingsBtn", text: "Settings", id: "settings-btn"},
-			{key: "homeBtn", text: "Home", id: "home-btn"}
-		]
-	}
-}
-
-function updateCardsData(){
-	cards = {
-	homeStats: [
-		{key: "highScoreCard", text: {title: "High Score:", data: `${GG_DATA.stats.highestScore}`, subTitle: `${GG_DATA.stats.highestScoreDate}`}, id: "high-score-card"},
-		{key: "accuracyCard", text: {title: "Accuracy:", data: `${Math.round(100*(GG_DATA.stats.guessesCorrect/(GG_DATA.stats.guessesCorrect+GG_DATA.stats.guessesIncorrect)))+"%"}`, subTitle: `✔︎ ${GG_DATA.stats.guessesCorrect} | ✗ ${GG_DATA.stats.guessesIncorrect}` }, id: "accuracy-card"},
-		{key: "gifsPerSecCard", text: {title: "Gifs per Sec:", data: `${(GG_DATA.stats.guessesCorrect/(GG_DATA.stats.numGames*60)).toString().slice(0, 4).slice(0, 4)}`, subTitle: `Avg. score: ${GG_DATA.stats.avgScore}` }, id: "gifs-per-sec-card"},
-		{key: "backBtn", text: "Back", id: "back-btn"},
-	],
-	gameOverStats: [
-		{key: "gameOverScoreCard", text: {title: "Score:", data: `${score}`, subTitle: "+/-" }, id: "game-over-score-card"},
-		{key: "gameOverAccuracyCard", text: {title: "Accuracy:", data: `${Math.round(100*(correctGuesses/(correctGuesses+incorrectGuesses)))+"%"}`, subTitle: "+/-" }, id: "game-over-accuracy-card"},
-		{key: "gameOverGifsPerSecCard", text: {title: "Gifs per Sec:", data: `${(score/60).toString().slice(0, 4)}`, subTitle: "+/-" }, id: "game-over-gifs-per-sec-card"},
-		{key: "backBtn", text: "Back", id: "back-btn"},
-	],
-	about: [
-		{key: "authorCard", text: {title: "Author", data: "William Gruszka", subTitle: "" }, id: "game-over-score-card"},
-		{key: "Api", text: {title: "made with", data: "<a href='https://developers.giphy.com/'>Giphy API</a>", subTitle: "" }, id: "game-over-gifs-per-sec-card"},
-		{key: "linksCard", text: {title: "Find out more:", data: "<a href='https://github.com/wilgru/Gipher'>Github.com</a>", subTitle: "" }, id: "game-over-accuracy-card"},
-		{key: "backBtn", text: "Back", id: "back-btn"},
-	]
-}}
-
 const pages = {
 	home: {
 		pageType: "top",
@@ -196,7 +98,6 @@ const pages = {
 		headerEl: headerChildren.title,
 		tileType: "buttons",
 		tileTypeKey: "home",
-		// typeSet: buttons.home,
 		showInput: false
 	},
 	gamePlay: {
@@ -205,7 +106,6 @@ const pages = {
 		headerEl: headerChildren.roundInfoSimple,
 		tileType: "gifs",
 		tileTypeKey: "none",
-		// typeSet: "none",
 		showInput: true
 	},
 	gameOver: {
@@ -214,7 +114,6 @@ const pages = {
 		headerEl: headerChildren.gameOverTitle,
 		tileType: "buttons",
 		tileTypeKey: "gameOver",
-		// typeSet: buttons.gameOver,
 		showInput: false
 	},
 	homeStats: {
@@ -223,7 +122,6 @@ const pages = {
 		headerEl: headerChildren.title,
 		tileType: "cards",
 		tileTypeKey: "homeStats",
-		// typeSet: cards.homeStats,
 		showInput: false
 	},
 	settings: {
@@ -232,7 +130,6 @@ const pages = {
 		headerEl: headerChildren.title,
 		tileType: "buttons",
 		tileTypeKey: "settings",
-		// typeSet: buttons.settings,
 		showInput: false
 	},
 	about: {
@@ -241,7 +138,6 @@ const pages = {
 		headerEl: headerChildren.title,
 		tileType: "cards",
 		tileTypeKey: "about",
-		// typeSet: cards.aboutInfo,
 		showInput: false
 	},
 	gameOverStats: {
@@ -250,7 +146,6 @@ const pages = {
 		headerEl: headerChildren.title,
 		tileType: "cards",
 		tileTypeKey: "gameOverStats",
-		// typeSet: cards.gameOverStats,
 		showInput: false
 	},
 }
@@ -293,6 +188,7 @@ let currentRound = {}
 let currentRoundWord = ""
 let nextRound = {}
 let nextRoundPrepared = false
+let gameInSession = false
 let score = 0
 let correctGuesses = 0
 let incorrectGuesses = 0
@@ -304,15 +200,178 @@ let buttons
 // initial function
 ;(function init() {
 	getStorage()
-	updateCardsData()
-	updateButtonsData()
+
+	guessInput.disabled = true
 	themeIndex = GG_DATA.config.theme
+	
 	setTheme(themeIndex)
 	prepareNextRound()
+	updateCardsData()
+	updateButtonsData()
 	removeCurrentPage(pages.home)
 })()
 
+// get GG_DATA from local storage if it exists
+function getStorage() {
+	GG_DATA = JSON.parse(localStorage.getItem("GG_DATA"))
+	if (GG_DATA === null) {
+		initGG_DATA()
+	}
+}
+
+// initialise a GG_DATA object if one doesnt exist in local storage
+function initGG_DATA() {
+	GG_DATA =
+	{
+		config: {
+			ms: false,
+			roundDisplay: "simple",
+			theme: 0
+		},
+		stats: {
+			highestScore: 0,
+			highestScoreDate: "--/--/--",
+			guessesCorrect: 0,
+			guessesIncorrect: 0,
+			accuracy: 0,
+			gps: 0,
+			avgScore: 0,
+			numGames: 0
+		}
+	}
+}
+
+// set local sotrage with updated data
+function setStorage(config, stats) {
+	if (config) {
+		GG_DATA.config.ms = false,
+		GG_DATA.config.roundDisplay = "simple",
+		GG_DATA.config.theme = themeIndex
+	}
+
+	if (stats) {
+		GG_DATA.stats.guessesCorrect += correctGuesses
+		GG_DATA.stats.guessesIncorrect += incorrectGuesses
+		GG_DATA.stats.accuracy = roundToDecimalPlace(100*(GG_DATA.stats.guessesCorrect/(GG_DATA.stats.guessesCorrect+GG_DATA.stats.guessesIncorrect)), 2)
+		GG_DATA.stats.numGames++
+		GG_DATA.stats.gps = roundToDecimalPlace(GG_DATA.stats.guessesCorrect/(GG_DATA.stats.numGames*60), 2)
+
+		// if a higher score has been made
+		if  (score > GG_DATA.stats.highestScore || (score > 0 && GG_DATA.stats.highestScore === "--")) {
+			const today = new Date()
+			GG_DATA.stats.highestScore = score
+			GG_DATA.stats.highestScoreDate = today.getDate() + "/" + today.getMonth() + "/" + today.getFullYear()
+		}
+
+		// if there is an average score
+		if (GG_DATA.stats.avgScore > 0) {
+			GG_DATA.stats.avgScore = roundToDecimalPlace((GG_DATA.stats.avgScore + score) / 2, 2)
+		} else {
+			GG_DATA.stats.avgScore = score
+		}
+
+	}
+	localStorage.setItem("GG_DATA", JSON.stringify(GG_DATA))
+}
+
 // 
+function roundToDecimalPlace(float, places) {
+	let placeModifier = 1
+	for (i = 0; i < places; i++) {
+		placeModifier += "0"
+	}
+	placeModifier = parseInt(placeModifier)
+	return Math.round(float * placeModifier) / placeModifier
+}
+
+// convert stats and enter placeholder value is stats are not set to anytihng/ set to 0
+function convertStats() {
+	let convertedStats = {}
+
+	// overall stats
+	convertedStats.localHighScore = GG_DATA.stats.highestScore || "--"
+	convertedStats.localHighScoreDate = GG_DATA.stats.highestScoreDate || "--/--/--"
+	convertedStats.localAccuracy = GG_DATA.stats.accuracy || "--"
+	convertedStats.localGuessesCorrect = GG_DATA.stats.guessesCorrect || "--"
+	convertedStats.localGuessesIncorrect = GG_DATA.stats.guessesIncorrect || "--"
+	convertedStats.localGps = GG_DATA.stats.gps || "--"
+	convertedStats.localAvgScore = GG_DATA.stats.avgScore || "--"
+
+	// game over stats
+	convertedStats.localPostGameAccuracy = roundToDecimalPlace(100*(correctGuesses/(correctGuesses+incorrectGuesses)), 2) || "--"
+	convertedStats.localPostGameGps = roundToDecimalPlace(score/60, 2) || "--"
+	convertedStats.localScore = score || "--"
+
+	// game over comarison stats
+	convertedStats.compareScore = GG_DATA.localScore - GG_DATA.localAvgScore || "--"
+	convertedStats.compareAccuracy = GG_DATA.localPostGameAccuracy - GG_DATA.localAccuracy || "--"
+	convertedStats.compareGps = GG_DATA.localGps - GG_DATA.localPostGameGps || "--"
+
+	return convertedStats
+}
+
+// update the text in each button set (if they can be)
+function updateButtonsData() {
+	buttons = {
+		home: [
+			{key: "playBtn", text: "Play", id: "play-btn"},
+			{key: "statsBtn", text: "Stats", id: "homepage-stats-btn"},
+			{key: "settingsBtn", text: "Settings", id: "settings-btn"},
+			{key: "aboutBtn", text: "about", id: "about-btn"}
+		],
+		settings: [
+			{key: "msToggleBtn", text: "Toggle ms", id: "ms-deptoggleth-btn"},
+			{key: "roundDisplayBtn", text: "Round Display", id: "round-display-btn"},
+			{key: "themeBtn", text: "Theme", id: "theme-btn"},
+			{key: "backBtn", text: "Back", id: "back-btn"}
+		],
+		gameOver: [
+			{key: "playAgainBtn", text: "Play Again", id: "play-again-btn"},
+			{key: "gameStatsBtn", text: "Game Stats", id: "game-over-stats-btn"},
+			{key: "settingsBtn", text: "Settings", id: "settings-btn"},
+			{key: "homeBtn", text: "Home", id: "home-btn"}
+		]
+	}
+}
+
+// 
+function updateToggleData() {
+	toggles = {
+		settings: [
+			{key: "msToggleBtn", text: {title: "Toggle ms", status: GG_DATA.config.ms}, id: "ms-deptoggleth-btn"},
+			{key: "roundDisplayBtn", text: {title: "Round Display", status: GG_DATA.config.roundDisplay}, id: "round-display-btn"},
+			{key: "themeBtn", text: {title: "Theme", status: "--"}, id: "theme-btn"},
+			{key: "backBtn", text: "Back", id: "back-btn"},
+		],
+	}
+}
+
+// update the text in each card set (if they can be)
+function updateCardsData(){
+	const statsData = convertStats()
+
+	cards = {
+	homeStats: [
+		{key: "highScoreCard", text: {title: "High Score:", data: `${statsData.localHighScore}`, subTitle: `${statsData.localHighScoreDate}`}, id: "high-score-card"},
+		{key: "accuracyCard", text: {title: "Accuracy:", data: `${statsData.localAccuracy}%`, subTitle: `✔︎ ${statsData.localGuessesCorrect} | ✗ ${statsData.localGuessesIncorrect}` }, id: "accuracy-card"},
+		{key: "gifsPerSecCard", text: {title: "Gifs per Sec:", data: `${statsData.localGps}`, subTitle: `Avg score: ${statsData.localAvgScore}` }, id: "gifs-per-sec-card"},
+		{key: "backBtn", text: "Back", id: "back-btn"},
+	],
+	gameOverStats: [
+		{key: "gameOverScoreCard", text: {title: "Score:", data: `${statsData.localScore}`, subTitle: `${statsData.compareScore}` }, id: "game-over-score-card"},
+		{key: "gameOverAccuracyCard", text: {title: "Accuracy:", data: `${statsData.localPostGameAccuracy}%`, subTitle: `${statsData.compareAccuracy}` }, id: "game-over-accuracy-card"},
+		{key: "gameOverGifsPerSecCard", text: {title: "Gifs per Sec:", data: `${statsData.localPostGameGps}`, subTitle: `${statsData.compareGps}` }, id: "game-over-gifs-per-sec-card"},
+		{key: "backBtn", text: "Back", id: "back-btn"},
+	],
+	about: [
+		{key: "authorCard", text: {title: "Author", data: "William Gruszka", subTitle: "" }, id: "game-over-score-card"},
+		{key: "Api", text: {title: "Gifs from", data: "<a href='https://giphy.com/'>Giphy.com</a>", subTitle: "" }, id: "game-over-gifs-per-sec-card"},
+		{key: "linksCard", text: {title: "Find out more:", data: "<a href='https://github.com/wilgru/Gipher'>Github.com</a>", subTitle: "" }, id: "game-over-accuracy-card"},
+		{key: "backBtn", text: "Back", id: "back-btn"},
+	]
+}}
+
+// remove all elements of the current page
 function removeCurrentPage(page) {
 	let index = currentPageSchedule.length -1
 
@@ -329,7 +388,7 @@ function removeCurrentPage(page) {
 	}, 100)
 }
 
-//
+// get everytihg in order for the next page before rendering the next page
 function pageSetup(page) {
 	unsetTiles()
 
@@ -385,99 +444,6 @@ function unsetTiles() {
 	gifContainers.forEach(container => container.innerHTML = "")
 }
 
-//
-function updateTypeSet(page) {
-	switch (page.tileType) {
-	case "buttons":
-		updateButtonsData()
-		page.typeSet = buttons[page.tileTypeKey]
-		break;
-	case "cards":
-		updateCardsData()
-		page.typeSet = cards[page.tileTypeKey]
-		break;
-	}
-}
-
-// home screen
-function homeScreen() {
-	currentTopPage = "home"
-	prepareNextRound()
-	fadeTilesOut()
-
-	// wait an inital 500ms (for the fade out to complete) then fade out the header, then begin to wait for next round to be ready to load
-	setTimeout(() => {
-		headerFadeOut() 
-		setButtons(buttons.home)
-
-		// wait 250ms for buttons to fade out then then change header
-		setTimeout(()=>{
-			headerFadeIn(headerChildren["title"])
-			fadeTilesIn()
-		}, 500)
-	}, 650);
-}
-
-// start game function
-function startGame() {
-	currentTopPage = "game"
-	fadeTilesOut()
-
-	// wait an inital 500ms (for the fade out to complete) then fade out the header, then begin to wait for next round to be ready to load
-	setTimeout(() => {
-		headerFadeOut() 
-
-		// wait 250ms for buttons to fade out then then change header
-		setTimeout(()=>{
-			headerFadeIn(headerChildren["roundInfoSimple"])
-			elementFadeIn(guessInput)
-			blockAndWait(hideButtons, fadeTilesIn, startCountdown, loadNextRound, prepareNextRound)
-		}, 500)
-	}, 650);
-}
-
-// call at end of game
-function gameOver() {
-	currentTopPage = "game over"
-	fadeTilesOut()
-	elementFadeOut(guessInput)
-
-	// wait an inital 500ms (for the fade out to complete) then fade out the header, then begin to wait for next round to be ready to load
-	setTimeout(() => {
-		clearBackgroundGifs()
-		headerFadeOut() 
-		setButtons(buttons.gameOver)
-
-		// wait 250ms for buttons to fade out then then change header
-		setTimeout(()=>{
-			headerFadeIn(headerChildren["gameOverTitle"])
-			fadeTilesIn()
-		}, 500)
-	}, 650);
-}
-
-// set submenu
-function submenu(cardSet) {
-	fadeTilesOut()
-
-	// wait an inital 500ms (for the fade out to complete) then fade out the header, then begin to wait for next round to be ready to load
-	setTimeout(() => {
-		headerFadeOut() 
-		setCards(cardSet)
-
-		// wait 250ms for buttons to fade out then then change header
-		setTimeout(()=>{
-			headerFadeIn(headerChildren["title"])
-			cascade(gifContainers, el => elementFadeIn(el), false)
-		}, 500)
-	}, 650);
-}
-
-// go back to the page before 
-function goBack() {
-	removeCurrentPage(pages[currentTopPage])
-}
-
 // set cards into gif containers
 function setCards(cardSet) {
 	const cardTemplate = ({ text, id }) => `
@@ -499,9 +465,6 @@ function setCards(cardSet) {
 				container.innerHTML = cardTemplate(cardSet[index])
 			}
 			gifContainers[3].innerHTML = btnBlockTemplate
-				// dynamicBlockElements[cardSet[index].key] = document.getElementById(cardSet[index].id)
-				// dynamicBlockElements["back"] = document.getElementById("back-btn")
-
 		}
 	)
 }
@@ -531,9 +494,11 @@ function roundTransition() {
 	score++
 	scoreInfo.innerHTML = `Score: ${score}`
 
-	// wait an inital 500ms (for the fade out to complete) then begin to wait for next round to be ready to load
+	// wait an inital 500ms (for the fade out to complete) then begin to wait for next round to be ready to load. dot do this if the game has ended whist this was waiting
 	setTimeout(() => {
-		blockAndWait(setGifs, fadeTilesIn)
+		if (gameInSession === true) {
+			blockAndWait(setGifs, fadeTilesIn)
+		}
 	}, 500);
 }
 
@@ -541,22 +506,14 @@ function roundTransition() {
 function startCountdown() {
 	timeLeft = totalTime;
 
-	// var timer = setInterval(function() {
-	// 	timeLeft--
-	// 	// timeInfo.innerHTML = (timeLeft/100).toFixed(2)
-	// 	timeInfo.innerHTML = timeLeft
-	// 	if (timeLeft === 0){
-	// 		clearInterval(timer)
-	// 		gameOver()
-	// 	}
-	// }, 1000);
-
 	(function loop() {
 		setTimeout(function() {
 			timeInfo.innerHTML = timeLeft
 			if (timeLeft == 0){
-				removeCurrentPage(pages.gameOver);
 				setStorage(false, true)
+				removeCurrentPage(pages.gameOver);
+				guessInput.disabled = true
+				gameInSession = false
 			} else {
 				timeLeft--
 				loop();
@@ -609,7 +566,6 @@ function setButtons(btnSet) {
 	gifContainers.forEach(
 		(container, index) => {
 				container.innerHTML = btnBlockTemplate(btnSet[index])
-				// dynamicBlockElements[btnSet[index].key] = document.getElementById(btnSet[index].id)
 			}
 		)
 }
@@ -619,18 +575,8 @@ function hideButtons() {
 	for (const btnKey in dynamicBlockElements) {
 		dynamicBlockElements[btnKey].style.display = "none";
 	}
-	// dynamicBlockElements = {}
 }
 
-// // fade element in with box shadow
-// function elementFadeIn(...els) {
-// 	els.forEach(el => {
-// 		el.style.opacity = 1
-// 		setTimeout(() => {
-// 			el.style.boxShadow = "var(--dark) 5px 5px"
-// 		}, delay);
-// 	})
-// }
 // fade element in with box shadow
 function elementFadeIn(el, shadow) {
 	el.style.opacity = 1
@@ -639,15 +585,6 @@ function elementFadeIn(el, shadow) {
 	}, delay);
 }
 
-// // fade element out
-// function elementFadeOut(el, shadow) {
-// 	els.forEach(el => {
-// 		el.style.boxShadow = "var(--dark) 0 0"
-// 		setTimeout(() => {
-// 			el.style.opacity = 0
-// 		}, delay);
-// 	})
-// }
 // fade element out
 function elementFadeOut(el, shadow) {
 	if (shadow) el.style.boxShadow = "var(--dark) 0 0"
@@ -663,29 +600,6 @@ function switchHeaderDisplay(headerEl) {
 		headerChildren[key].element.style.display = "none"
 	}
 	desiredEl.style.display = "flex"
-}
-
-// fade header in
-function headerFadeIn(headerEl) {
-	switchHeaderDisplay(headerEl)
-	setTimeout(() => {
-		headerEl.element.style.opacity = 1
-		setTimeout(() => {
-			if (headerEl.shadow) headerEl.element.style.boxShadow = "var(--dark) 5px 5px"
-		}, delay);
-	}, 1);
-}
-
-// fade header out
-function headerFadeOut() {
-	for(header in headerChildren){
-		if (headerChildren[header].shadow) headerChildren[header].element.style.boxShadow = "var(--dark) 0 0"
-	}
-	setTimeout(() => {
-		for(header in headerChildren){
-			headerChildren[header].element.style.opacity = 0
-		}
-	}, delay);
 }
 
 // cascade fade the gifs out
@@ -724,13 +638,6 @@ function loadNextRound() {
 
 	gifContainers.forEach(
 		(item, key) => item.style.backgroundImage = `url("${currentRound.urls[key].images.original.url}")`
-	)
-}
-
-// clear any gifs set as backgrounds for the gif comtainers
-function clearBackgroundGifs() {
-	gifContainers.forEach(
-		(item, key) => item.style.backgroundImage = "none"
 	)
 }
 
@@ -805,12 +712,18 @@ gifContainers.forEach(container => {
 
 		switch (clickedContainer.id) {
 			case "play-btn":
+				guessInput.disabled = false
+				gameInSession = true
+				scoreInfo.innerHTML = `Score: ${score}`
 				score = 0
 				correctGuesses = 0
 				incorrectGuesses = 0
 				removeCurrentPage(pages.gamePlay)
 				break;
 			case "play-again-btn":
+				guessInput.disabled = false
+				gameInSession = true
+				scoreInfo.innerHTML = `Score: ${score}`
 				score = 0
 				correctGuesses = 0
 				incorrectGuesses = 0
