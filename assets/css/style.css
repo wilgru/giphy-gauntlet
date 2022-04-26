@@ -105,7 +105,7 @@ html {
     transition: 200ms;
 }
 
-#round-info-simple {
+#round-info-simple, #round-info {
     height: 50%;
     margin: 10px;
     opacity: 0;
@@ -124,6 +124,10 @@ html {
     transition: 200ms;
 }
 
+#simple, #advanced {
+    display: none;
+}
+
 .round-info-inner-card {
     background-color: var(--light);
     height: 93.5%;
@@ -136,7 +140,7 @@ html {
     text-align: center;
 }
 
-#game-over-title {
+#game-over-title, #assignable-title {
     height: 50%;
     margin: 10px;
     opacity: 0;
