@@ -2,6 +2,7 @@
 const gifContainers = document.querySelectorAll(".gif-container")
 const headerRow = document.getElementById("header-row")
 const headerTitle = document.getElementById("header-title")
+const assignableTitle = document.getElementById("assignable-title")
 const timeInfo = document.querySelector(".time-info")
 const scoreInfo = document.querySelector(".score-info")
 const guessform = document.getElementById("guess-form")
@@ -72,20 +73,42 @@ let GG_DATA
 // 	}
 // }
 
+// const headerChildren = {
+// 	title: {
+// 		element: headerRow.children[0],
+// 		shadow: false
+// 	},
+// 	roundInfoSimple: {
+// 		element: headerRow.children[1],
+// 		shadow: true
+// 	},
+// 	roundInfoAdvanced: {
+// 		element: headerRow.children[2],
+// 		shadow: true
+// 	},
+// 	gameOverTitle: {
+// 		element: headerRow.children[3],
+// 		shadow: true
+// 	},
+// 	assignableTitle: {
+// 		element: headerRow.children[4],
+// 		shadow: true
+// 	}
+// }
 const headerChildren = {
 	title: {
 		element: headerRow.children[0],
 		shadow: false
 	},
-	roundInfoSimple: {
+	roundInfo: {
 		element: headerRow.children[1],
 		shadow: true
 	},
-	roundInfoAdvanced: {
+	gameOverTitle: {
 		element: headerRow.children[2],
 		shadow: true
 	},
-	gameOverTitle: {
+	assignableTitle: {
 		element: headerRow.children[3],
 		shadow: true
 	}
@@ -103,7 +126,7 @@ const pages = {
 	gamePlay: {
 		pageType: "top",
 		pageName: "gamePlay",
-		headerEl: headerChildren.roundInfoSimple,
+		headerEl: headerChildren.roundInfo,
 		tileType: "gifs",
 		tileTypeKey: "none",
 		showInput: true
@@ -119,7 +142,8 @@ const pages = {
 	homeStats: {
 		pageType: "sub",
 		pageName: "homeStats",
-		headerEl: headerChildren.title,
+		headerEl: headerChildren.assignableTitle,
+		headerText: "Stats",
 		tileType: "cards",
 		tileTypeKey: "homeStats",
 		showInput: false
@@ -127,7 +151,8 @@ const pages = {
 	settings: {
 		pageType: "sub",
 		pageName: "settings",
-		headerEl: headerChildren.title,
+		headerEl: headerChildren.assignableTitle,
+		headerText: "settings",
 		tileType: "buttons",
 		tileTypeKey: "settings",
 		showInput: false
@@ -135,7 +160,8 @@ const pages = {
 	about: {
 		pageType: "sub",
 		pageName: "about",
-		headerEl: headerChildren.title,
+		headerEl: headerChildren.assignableTitle,
+		headerText: "About",
 		tileType: "cards",
 		tileTypeKey: "about",
 		showInput: false
@@ -143,7 +169,8 @@ const pages = {
 	gameOverStats: {
 		pageType: "sub",
 		pageName: "gameOverStats",
-		headerEl: headerChildren.title,
+		headerEl: headerChildren.assignableTitle,
+		headerText: "This game's stats",
 		tileType: "cards",
 		tileTypeKey: "gameOverStats",
 		showInput: false
@@ -396,6 +423,12 @@ function pageSetup(page) {
 	currentPageSchedule = []
 
 	switchHeaderDisplay(page.headerEl)
+	if (page.headerEl.element.id === "assignable-title") { // CLEAN THIS
+		assignableTitle.children[0].children[0].innerHTML = page.headerText
+	}
+	const roundHeaderType = GG_DATA.config.roundDisplay === "advanced" ? "advanced" : "simple" // CLEAN THIS
+	document.getElementById(roundHeaderType).style.display = "flex" // CLEANN THISs
+
 	currentPageSchedule.push(page.headerEl)
 
 	for (let i = 0; i < numGifContainers; i++) {
