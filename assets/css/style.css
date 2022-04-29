@@ -56,6 +56,30 @@ html {
     cursor: pointer;
 }
 
+.toggle-block {
+    text-align: center;
+    font-size: 30px;
+    background-color: var(--light);
+    width: 98%;
+    height: 98%;
+}
+
+.toggle-block h3 {
+    margin: 0;
+    font-size: 15px;
+}
+
+.toggle-block p {
+    margin: 0;
+    font-size: 30px;
+}
+
+.toggle-block:hover {
+    background-color: var(--dark);
+    color: var(--light);
+    cursor: pointer;
+}
+
 .gif-block {
     background-color: var(--light);
     width: 98%;
