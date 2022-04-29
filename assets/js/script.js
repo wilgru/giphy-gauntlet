@@ -153,7 +153,7 @@ const pages = {
 		pageName: "settings",
 		headerEl: headerChildren.assignableTitle,
 		headerText: "settings",
-		tileType: "buttons",
+		tileType: "toggles",
 		tileTypeKey: "settings",
 		showInput: false
 	},
@@ -206,14 +206,15 @@ const root = document.documentElement;
 let themeIndex
 
 //page vars
-let dynamicBlockElements = {}
 let currentTopPage = "home"
 let currentPageSchedule = []
+let toggleTilesEls = {}
 
 //game vars
 let currentRound = {}
 let currentRoundWord = ""
 let nextRound = {}
+let timeLeft = 60
 let nextRoundPrepared = false
 let gameInSession = false
 let score = 0
@@ -223,6 +224,7 @@ let incorrectGuesses = 0
 // cards ad buttons vars
 let cards
 let buttons
+let toggles
 
 // initial function
 ;(function init() {
@@ -329,10 +331,10 @@ function convertStats() {
 	convertedStats.localPostGameGps = roundToDecimalPlace(score/60, 2) || "--"
 	convertedStats.localScore = score || "--"
 
-	// game over comarison stats
-	convertedStats.compareScore = GG_DATA.localScore - GG_DATA.localAvgScore || "--"
-	convertedStats.compareAccuracy = GG_DATA.localPostGameAccuracy - GG_DATA.localAccuracy || "--"
-	convertedStats.compareGps = GG_DATA.localGps - GG_DATA.localPostGameGps || "--"
+	// game over comparison stats
+	convertedStats.compareScore = convertedStats.localScore - GG_DATA.stats.avgScore || "--"
+	convertedStats.compareAccuracy = convertedStats.localPostGameAccuracy - GG_DATA.stats.accuracy || "--"
+	convertedStats.compareGps = convertedStats.localGps - GG_DATA.stats.gps || "--"
 
 	return convertedStats
 }
@@ -361,13 +363,13 @@ function updateButtonsData() {
 	}
 }
 
-// 
-function updateToggleData() {
+// update the text in each toggle set (if they can be)
+function updateTogglesData() {
 	toggles = {
 		settings: [
-			{key: "msToggleBtn", text: {title: "Toggle ms", status: GG_DATA.config.ms}, id: "ms-deptoggleth-btn"},
+			{key: "msToggleBtn", text: {title: "Toggle ms", status: GG_DATA.config.ms}, id: "ms-toggle-btn"},
 			{key: "roundDisplayBtn", text: {title: "Round Display", status: GG_DATA.config.roundDisplay}, id: "round-display-btn"},
-			{key: "themeBtn", text: {title: "Theme", status: "--"}, id: "theme-btn"},
+			{key: "themeBtn", text: {title: "Theme", status: ""}, id: "theme-btn"},
 			{key: "backBtn", text: "Back", id: "back-btn"},
 		],
 	}
@@ -427,6 +429,8 @@ function pageSetup(page) {
 		assignableTitle.children[0].children[0].innerHTML = page.headerText
 	}
 	const roundHeaderType = GG_DATA.config.roundDisplay === "advanced" ? "advanced" : "simple" // CLEAN THIS
+	document.getElementById("advanced").style.display = "none" // CLEANN THISs
+	document.getElementById("simple").style.display = "none" // CLEANN THISs
 	document.getElementById(roundHeaderType).style.display = "flex" // CLEANN THISs
 
 	currentPageSchedule.push(page.headerEl)
@@ -443,6 +447,10 @@ function pageSetup(page) {
 		case "cards":
 			updateCardsData()
 			setCards(cards[page.tileTypeKey])
+			break;
+		case "toggles":
+			updateTogglesData()
+			setToggles(toggles[page.tileTypeKey])
 			break;
 		case "gifs":
 			setGifs()
@@ -502,6 +510,46 @@ function setCards(cardSet) {
 	)
 }
 
+// show the buttons that have been parsed
+function setButtons(btnSet) {
+	const btnBlockTemplate = ({ text, id }) => `
+	<btn class="col-container btn-block" id="${id}">
+		${text}
+	</btn>
+	`
+	gifContainers.forEach(
+		(container, index) => {
+				container.innerHTML = btnBlockTemplate(btnSet[index])
+			}
+		)
+}
+
+// set cards into gif containers
+function setToggles(cardSet) {
+	toggleTilesEls = {}
+	const cardTemplate = ({ text, id }) => `
+	<btn class="col-container toggle-block" id="${id}">
+		<p>${text.title}</p>
+		<h3>${text.status}</h3>
+	</btn>
+	`
+	const btnBlockTemplate = `
+	<btn class="col-container btn-block" id="back-btn" data-back-destination="home">
+			Back
+	</btn>
+	`
+
+	gifContainers.forEach(
+		(container, index) => {
+			if (cardSet[index].key != "backBtn") {
+				container.innerHTML = cardTemplate(cardSet[index])
+				toggleTilesEls[cardSet[index].id] = document.getElementById(cardSet[index].id)
+			}
+			gifContainers[3].innerHTML = btnBlockTemplate
+		}
+	)
+}
+
 // set cards into gif containers
 function setGifs() {
 	currentRound = nextRound
@@ -525,7 +573,8 @@ function setGifs() {
 function roundTransition() {
 	fadeTilesOut()
 	score++
-	scoreInfo.innerHTML = `Score: ${score}`
+	// scoreInfo.innerHTML = `Score: ${score}`
+	// updateRoundDisplay()
 
 	// wait an inital 500ms (for the fade out to complete) then begin to wait for next round to be ready to load. dot do this if the game has ended whist this was waiting
 	setTimeout(() => {
@@ -541,7 +590,8 @@ function startCountdown() {
 
 	(function loop() {
 		setTimeout(function() {
-			timeInfo.innerHTML = timeLeft
+			// timeInfo.innerHTML = timeLeft
+			updateRoundDisplay()
 			if (timeLeft == 0){
 				setStorage(false, true)
 				removeCurrentPage(pages.gameOver);
@@ -589,27 +639,6 @@ function returnRandomFromArray(wordsArray, num) {
 	}
 }
 
-// show the buttons that have been parsed
-function setButtons(btnSet) {
-	const btnBlockTemplate = ({ text, id }) => `
-	<btn class="col-container btn-block" id="${id}">
-			${text}
-	</btn>
-	`
-	gifContainers.forEach(
-		(container, index) => {
-				container.innerHTML = btnBlockTemplate(btnSet[index])
-			}
-		)
-}
-
-// hide any buttons currently on the page
-function hideButtons() {
-	for (const btnKey in dynamicBlockElements) {
-		dynamicBlockElements[btnKey].style.display = "none";
-	}
-}
-
 // fade element in with box shadow
 function elementFadeIn(el, shadow) {
 	el.style.opacity = 1
@@ -633,6 +662,19 @@ function switchHeaderDisplay(headerEl) {
 		headerChildren[key].element.style.display = "none"
 	}
 	desiredEl.style.display = "flex"
+}
+
+// 
+function updateRoundDisplay() {
+	const timeInfoEls = document.querySelectorAll(".time-info")
+	const scoreInfoEls = document.querySelectorAll(".score-info")
+	const accuracyInfoEl = document.querySelector(".accuracy-info")
+	const gpsInfoEl = document.querySelector(".gps-info")
+
+	timeInfoEls.forEach(el => {el.textContent = timeLeft})
+	scoreInfoEls.forEach(el => {el.textContent = score})
+	accuracyInfoEl.textContent = (roundToDecimalPlace(100*((correctGuesses||1)/((correctGuesses||1) + incorrectGuesses)), 2) || '100') + '%'
+	gpsInfoEl.textContent = roundToDecimalPlace(correctGuesses/(totalTime - timeLeft), 2) || 0
 }
 
 // cascade fade the gifs out
@@ -674,6 +716,7 @@ function loadNextRound() {
 	)
 }
 
+//
 function setTheme() {
 	root.style.setProperty('--light', themes[themeIndex].light);
 	root.style.setProperty('--mid', themes[themeIndex].mid);
@@ -747,19 +790,21 @@ gifContainers.forEach(container => {
 			case "play-btn":
 				guessInput.disabled = false
 				gameInSession = true
-				scoreInfo.innerHTML = `Score: ${score}`
+				// scoreInfo.innerHTML = `${score}`
 				score = 0
 				correctGuesses = 0
 				incorrectGuesses = 0
+				updateRoundDisplay()
 				removeCurrentPage(pages.gamePlay)
 				break;
 			case "play-again-btn":
 				guessInput.disabled = false
 				gameInSession = true
-				scoreInfo.innerHTML = `Score: ${score}`
+				// scoreInfo.innerHTML = `${score}`
 				score = 0
 				correctGuesses = 0
 				incorrectGuesses = 0
+				updateRoundDisplay()
 				removeCurrentPage(pages.gamePlay)
 				break;
 			case "home-btn":
@@ -780,6 +825,18 @@ gifContainers.forEach(container => {
 			case "theme-btn":
 				switchTheme()
 				break;
+			case "ms-toggle-btn":
+				if (GG_DATA.config.ms) {GG_DATA.config.ms = false} else {GG_DATA.config.ms = true}
+				toggleTilesEls["ms-toggle-btn"].children[1].textContent = GG_DATA.config.ms
+				setStorage()
+				updateTogglesData()
+				break;
+			case "round-display-btn":
+				if (GG_DATA.config.roundDisplay === "simple") {GG_DATA.config.roundDisplay = "advanced"} else {GG_DATA.config.roundDisplay = "simple"}
+				toggleTilesEls["round-display-btn"].children[1].textContent = GG_DATA.config.roundDisplay
+				setStorage()
+				updateTogglesData()
+				break;
 			case "back-btn":
 				removeCurrentPage(pages[currentTopPage])
 				break;
@@ -793,4 +850,5 @@ guessform.addEventListener("submit", (event) => {
 	guessInput.value = ""
 
 	checkGuessCorrect(guess)
+	updateRoundDisplay()
 })
