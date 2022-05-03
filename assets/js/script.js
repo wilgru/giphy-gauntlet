@@ -7,6 +7,8 @@ const timeInfo = document.querySelector(".time-info")
 const scoreInfo = document.querySelector(".score-info")
 const guessform = document.getElementById("guess-form")
 const guessInput = document.getElementById("guess-input")
+const shuffleBtn = document.getElementById("shuffle-btn")
+const submitBtn = document.getElementById("submit-btn")
 
 // global static vars
 const delay = 100
@@ -48,11 +50,6 @@ const themes = [
 		light: "rgb(255, 255, 255)",
 		mid: "rgb(201, 201, 201)",
 		dark: "rgb(80, 83, 84)",
-	},
-	{
-		light: "rgb(255, 0, 0)",
-		mid: "rgb(0, 0, 255)",
-		dark: "rgb(0, 255, 0)",
 	}
 ]
 
@@ -303,7 +300,7 @@ function setStorage(config, stats) {
 	localStorage.setItem("GG_DATA", JSON.stringify(GG_DATA))
 }
 
-// 
+// round a given number to a given nnumber of decimal places
 function roundToDecimalPlace(float, places) {
 	let placeModifier = 1
 	for (i = 0; i < places; i++) {
@@ -332,9 +329,9 @@ function convertStats() {
 	convertedStats.localScore = score || "--"
 
 	// game over comparison stats
-	convertedStats.compareScore = convertedStats.localScore - GG_DATA.stats.avgScore || "--"
-	convertedStats.compareAccuracy = convertedStats.localPostGameAccuracy - GG_DATA.stats.accuracy || "--"
-	convertedStats.compareGps = convertedStats.localGps - GG_DATA.stats.gps || "--"
+	convertedStats.compareScore = roundToDecimalPlace(convertedStats.localScore - GG_DATA.stats.avgScore, 2) || "--"
+	convertedStats.compareAccuracy = roundToDecimalPlace(convertedStats.localPostGameAccuracy - GG_DATA.stats.accuracy, 2) || "--"
+	convertedStats.compareGps = roundToDecimalPlace((convertedStats.localGuessesCorrect/60) - GG_DATA.stats.gps, 2) || "--"
 
 	return convertedStats
 }
@@ -459,13 +456,13 @@ function pageSetup(page) {
 	}
 
 	if (page.showInput) {
-		currentPageSchedule.push({element: guessInput, shadow: true})
+		currentPageSchedule.push({element: guessInput, shadow: true}, {element: submitBtn, shadow: true}, {element: shuffleBtn, shadow: true})
 	}
 
 	renderCurrentPage()
 }
 
-//
+// render the page usinng whatever data has been prepared
 function renderCurrentPage() {
 	let index = 0
 	const pageScheduleLength = currentPageSchedule.length
@@ -480,7 +477,7 @@ function renderCurrentPage() {
 	}, 100)
 }
 
-//
+// remove any inner tile content from tiles
 function unsetTiles() {
 	gifContainers.forEach(container => container.innerHTML = "")
 }
@@ -664,7 +661,7 @@ function switchHeaderDisplay(headerEl) {
 	desiredEl.style.display = "flex"
 }
 
-// 
+// update the info in the round display
 function updateRoundDisplay() {
 	const timeInfoEls = document.querySelectorAll(".time-info")
 	const scoreInfoEls = document.querySelectorAll(".score-info")
