@@ -89,14 +89,6 @@ html {
     background-repeat: no-repeat;
 }
 
-/* .btn {
-    background-color: var(--void);
-    border: 2px solid var(--dark);
-    border-radius: 50px;
-    width: 300px;
-    color: var(--dark);
-} */
-
 /* main body container */
 #main-container {
     display: flex;
@@ -194,7 +186,25 @@ html {
     height: 120px;
 }
 
-#guess-input {
+#guess-input:hover {
+    box-shadow: var(--dark) 7px 7px !important;
+}
+
+#guess-input:focus-visible {
+    outline: none;
+}
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: var(--mid);
+    opacity: 1; /* Firefox */
+}
+
+#shuffle-btn {
+    border-radius: 20px;
+}
+
+.input-item {
+    margin: 0 5px;
     background-color: var(--light);
     border: 2px solid var(--dark);
     opacity: 0;
@@ -202,6 +212,20 @@ html {
     transition: 200ms;
 }
 
-#guess-input:focus-visible {
-    outline: none;
+.btn:hover {
+    box-shadow: var(--dark) 7px 7px !important;
+
+    background-color: var(--dark);
+    color: var(--light);
+    cursor: pointer;
+}
+
+/* footer */
+footer {
+    position: fixed;
+    bottom: 0;
+}
+
+.footer-container {
+    width: 100vw;
 }

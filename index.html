@@ -13,7 +13,7 @@
     <!-- css -->
     <link rel="stylesheet" href="./assets/css/reset.css">
     <link rel="stylesheet" href="./assets/css/style.css"> 
-    <title>Gipher</title>
+    <title>Giphy Gauntlet</title>
 </head>
 <body>
     <main>
@@ -85,7 +85,7 @@
                                         Game Over!
                                     </h2>
                                     <h2 class="round-info-item">
-                                        <span style="font-size: 15px;">Score:</span> 0
+                                        <span style="font-size: 15px;">Score:</span> <span class="score-info">0</span>
                                     </h2>
                                 </div>
                             </div>
@@ -122,8 +122,9 @@
                 <!-- bottom container -->
                 <div class="row-container" id="bottom-container">
                     <form id="guess-form">
-                        <input type="text" id="guess-input" placeholder="Type your guess here!" autocomplete="off">
-                        <input type="submit" hidden>
+                        <input type="text" id="guess-input" class="input-item" placeholder="Type your guess here!" autocomplete="off">
+                        <input type="submit" id="submit-btn" class="input-item btn">
+                        <button type="button" id="shuffle-btn" class="input-item btn">Shuffle</button>
                     </form>
                 </div>
             </div>
@@ -131,7 +132,9 @@
     </main>
 
     <footer>
-
+        <div class="footer-container">
+            <p style="color: var(--mid); text-align: center; font-size: 12px;">&copy; William Gruszka; Made using <a style="color: var(--dark);" href="https://developers.giphy.com/">Giphy API</a></p>
+        </div>
     </footer>
 
     <script src="./assets/js/keys.js"></script>
