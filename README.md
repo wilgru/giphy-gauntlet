@@ -3,9 +3,8 @@
 Giphy Gauntlet is a simple in browser game where you have to guess as many words as possible based on the GIFs shown within a given timeframe. Build using Vanilla JS, HTML, CSS and the [Giphy API](https://developers.giphy.com) for the gifs.
 
 <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 10px;">
-  <img src="./assets/images/clip1.gif" style="height: 250px; width: auto;" />
-  <img src="./assets/images/clip3.gif" style="height: 250px; width: auto;"/>
-  <img src="./assets/images/clip2.gif" style="height: 250px; width: auto;"/>
+  <img src="./assets/images/clip1.gif" style="height: 400; width: 400;" />
+  <img src="./assets/images/clip2.gif" style="height: 400; width: 400;"/>
 </div>
 
 ## Setup
