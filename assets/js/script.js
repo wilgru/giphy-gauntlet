@@ -10,6 +10,9 @@ const guessInput = document.getElementById("guess-input")
 const shuffleBtn = document.getElementById("shuffle-btn")
 const submitBtn = document.getElementById("submit-btn")
 
+// Add API key here
+const GIPHY_API_KEY = "";
+
 // global static vars
 const delay = 100
 const numGifContainers = gifContainers.length
